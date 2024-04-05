@@ -7,4 +7,10 @@
     <RootNamespace>blog_system</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Views\BlogPosts\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\BlogPosts\" />
+  </ItemGroup>
 </Project>
