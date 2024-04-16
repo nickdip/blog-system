@@ -1,0 +1,13 @@
+﻿@model List<blog_system.Models.BlogPost>
+
+@{
+    <h1>Blog Posts</h1>
+    <ul>
+        @foreach (var post in @Model)
+{
+                <li>@post.Title</li>
+}
+    </ul>
+
+}
+

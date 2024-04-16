@@ -1,9 +1,25 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using blog_system.Data;
+using Microsoft.EntityFrameworkCore;
+using blog_system.Models;
+
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddDbContext<BlogContext>(options =>
+{
+    options.UseSqlServer("Server=localhost;DataBase=BlogDb;User ID=sa;Password=Sqyonde1;TrustServerCertificate=True;");
+}); 
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    SeedData.Initialize(services);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -24,5 +40,8 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+
 app.Run();
+
+
 
