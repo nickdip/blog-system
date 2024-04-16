@@ -13,7 +13,8 @@ public class HomeController : Controller
         _logger = logger;
     }
 
-    public IActionResult Index()
+    public IActionResult Index() //IActionResult means 'I will perform some action and return a response that's suitable for this HTTP request. OFfers flexibility on what is returned
+
     {
         return View();
     }
