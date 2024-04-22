@@ -1,8 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using blog_system.Data;
 using Microsoft.EntityFrameworkCore;
+using blog_system.ViewModels;
+using blog_system.Models;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
+//LINQ - language that .NET/C# uses to communicate to the database
+
+
 
 namespace blog_system.Controllers
 {
@@ -17,24 +23,51 @@ namespace blog_system.Controllers
         }
 
         //GET: /blogposts/
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var blogposts = await _context.BlogPosts.ToListAsync();
-            return View(blogposts);
+            BlogPostsViewModel viewModel = new BlogPostsViewModel()
+            {
+                BlogPosts = _context.BlogPosts.ToList(),
+                Comments = _context.Comments.ToList()
+            };
+            return View(viewModel);
 
         }
 
+        public IActionResult NewPost()
+        {
+            return View();
+        }
 
+        //POST: /blogposts/new
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> NewPost(BlogPostsViewModel viewModel) //Can I bring 'bind' back into it?
+        {
+            if (ModelState.IsValid)
+            {
+                var blogpost = new BlogPost
+                {
+                    Body = viewModel.Body,
+                    Title = viewModel.Title,
+                    Date = DateTime.Now,
+                    User = "testuser"
+                };
 
+                try
+                {
+                    _context.Update(blogpost);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    throw;
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View();
+        }
 
-
-        //// GET: /blogposts/random
-        //public IActionResult Random()
-        //{
-        //    BlogPost b = new BlogPost() { Title = "My First Post", Body = "HELLO" };
-
-        //    return View(b);
-        //}
 
         //// GET: /blogposts/ 
         //public IActionResult Index(int? pageIndex, string sortBy) // int question mark means that it can be nullable

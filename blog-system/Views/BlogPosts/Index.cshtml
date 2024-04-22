@@ -1,13 +1,85 @@
-﻿@model List<blog_system.Models.BlogPost>
+﻿@model blog_system.ViewModels.BlogPostsViewModel
 
 @{
     <h1>Blog Posts</h1>
     <ul>
-        @foreach (var post in @Model)
-{
-                <li>@post.Title</li>
-}
+        @if (Model.BlogPosts != null)
+        {
+            foreach (var post in Model.BlogPosts)
+            {
+                <li>
+                    <ul>
+                        <li>@post.Title</li>
+                        <li>@post.Body</li>
+                        @if (Model.Comments != null)
+                        {
+                            <li>
+                                Comments:
+                                <ul id="commentsList">
+                                    @foreach (var comment in Model.Comments)
+                                        @if (comment.BlogPostId == post.Id)
+                                        {
+                                            {
+                                                <li>
+                                                    <ul>
+                                                        <li>User: @comment.User</li>
+                                                        <li>Message: @comment.Body</li>
+                                                        <li>Date: @comment.Date</li>
+                                                    </ul>
+                                                </li>
+                                            }
+                                        }
+                                </ul>
+                            </li>
+                    }
+                        <li>
+                            <div class="form-group">
+                                <label for="Comment">Comment:</label>
+                                @Html.TextBoxFor(model => model.CommentBody, new { @class = "form-control", id = "commentContent" })
+                                @Html.ValidationMessageFor(model => model.CommentBody, "", new { @class = "text-danger" })
+                            </div>
+                        </li>
+                        <li>
+                            Post as @Model.User
+                        </li>
+                        <li>
+                            <button onClick="postComment('@post.Id','@DateTime.Now', '@Model.User')" class="btn btn-primary">Post</button>
+                            <div id="success"></div>
+                        </li>
+                    </ul>
+                </li>
+            }
+        }
     </ul>
-
 }
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+function postComment(id, date, user) {
+
+    var commentBody = $('#commentContent').val();
+
+    $.ajax({
+        url: '@Url.Action("PostComment", "Comments")',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            Body: commentBody,
+            BlogID: id
+        }),
+        success: function (res) {
+            if (res.success) {
+                $('#commentsList').append('<li><ul><li>User: ' + commentBody + '</li>' + '<li> Message:' + date + '</li>' + '<li> Date:' + user + '</li></ul></li>');
+                $('#success').append('Comment posted!')
+            }
+            else {
+                $('#success').append('Error posting comment')
+            }
+        },
+        error: function (xhr) {
+            console.log('Error posting comment: ' + xhr.statusText);
+        }
+    });
+
+}
+</script>

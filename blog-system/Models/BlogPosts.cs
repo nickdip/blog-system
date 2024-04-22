@@ -5,6 +5,7 @@ namespace blog_system.Models
 {
 	public class BlogPost
 	{
+        // primary key
         public int Id { get; set; }
 
         [Required]
@@ -15,14 +16,16 @@ namespace blog_system.Models
         [MaxLength(10000)]
         public string? Body { get; set; } = "";
 
-        [Required]
         [MaxLength(ApplicationSettings.UserNameMaxLength)]
         public string User { get; set; } = "";
 
-        [Required]
         public DateTime Date { get; set; }
+
+        // navigation property 
+        public ICollection<Comment>? Comments { get; set; } = new List<Comment>();
 
         
     }
 }
 
+// Entity Framework
